@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
     next();
 });
 var socketio = require('socket.io');
-io = socketio.listen(server);
+var io = socketio.listen(server);
 
 nunjucks.configure('views', { noCache: true });
 // nunjucks.render('index.html', locals, function (err, output) {
@@ -25,10 +25,10 @@ app.engine('html', nunjucks.render); // when giving html files to res.render, te
 app.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 app.use('/', routes(io));
-app.use(express.static('public'))
+app.use(express.static('public'));
 // app.get('/tweets/', function(request, response, next){
 //   response.send(tweetBank.list());
 // });
