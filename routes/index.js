@@ -4,11 +4,36 @@ const router = express.Router();
 const tweetBank = require('../tweetBank');
 
 router.get('/', function (req, res) {
-  let tweets = tweetBank.list();
-  res.render( 'index', { tweets: tweets } );
+  let tweetsArr = tweetBank.list();
+  res.render( 'index', { tweets: tweetsArr, showForm: true } );
 });
-// router.get('/stylesheets/style.css', function (request, response){
-//   response.sendFile('/stylesheets/style.css', {root: 'public'});
-// })
+router.get('/users/:name', function(req, res) {
+  var name = req.params.name;
+  var list = tweetBank.find( function(o){
+    var underscoredName = o.name.toLowerCase();
+    console.log(name);
+    return underscoredName === name.toLowerCase();
+  }) ;
+  res.render( 'index', { tweets: list, showForm: true, formName: name } );
+});
+router.get('/tweets/:id', function(req, res) {
+  var id = req.params.id;
+  var list = tweetBank.find( function(o){
+    return o.id == id;
+  }) ;
+  res.render( 'index', { tweets: list } );
+});
 
-module.exports = router;
+router.post('/tweets', function(req, res) {
+  var name = req.body.name;
+  var text = req.body.text;
+  var newTweet = tweetBank.add(name, text);
+  io.sockets.emit('newTweet', newTweet);
+  res.redirect('/');
+});
+
+//io.sockets.emit('newTweet', 'foo');
+
+module.exports = function(io) {
+  return router;
+}
